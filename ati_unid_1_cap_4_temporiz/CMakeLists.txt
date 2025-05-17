@@ -48,9 +48,7 @@ pico_enable_stdio_usb(ati_unid_1_cap_4_temporiz 1)
 target_link_libraries(ati_unid_1_cap_4_temporiz 
         pico_stdlib
         hardware_pwm
-        hardware_clocks
-        hardware_gpio
-        hardware_timer)
+        hardware_clocks)
 
 # Add the standard include files to the build
 target_include_directories(ati_unid_1_cap_4_temporiz PRIVATE

@@ -2,12 +2,11 @@
 #include "pico/stdlib.h"
 #include "hardware/pwm.h"
 #include "hardware/clocks.h"
-#include "hardware/gpio.h"
-#include "hardware/timer.h"
+
 
 void setup_leds()
 {
-
+    // Configura os Leds
     gpio_init(LED_VERDE);
     gpio_set_dir(LED_VERDE, GPIO_OUT);
 
@@ -30,7 +29,6 @@ void setup_beep()
     gpio_set_dir(BUZZER_PIN, GPIO_OUT);
 
     // Inicializar o PWM no pino do buzzer
-
     gpio_set_function(BUZZER_PIN, GPIO_FUNC_PWM);
 
     // Obter o slice do PWM associado ao pino
@@ -52,16 +50,6 @@ int64_t beep(alarm_id_t id, void *user_data)
     uint slice_num = pwm_gpio_to_slice_num(BUZZER_PIN);
     pwm_set_gpio_level(BUZZER_PIN, 2048);
 
-    // for (int i = 0; i < repeticao; i++)
-    // {
-    //     // Configurar o duty cycle para 50% (ativo)
-    //     // Temporização
-    //     // sleep_ms(duracao_ms);
-    //     // Desativar o sinal PWM (duty cycle 0)
-    //     // sleep_ms(100);
-
-    // }
-    // pwm_set_gpio_level(BUZZER_PIN, 0);
     return 0;
 
 }
