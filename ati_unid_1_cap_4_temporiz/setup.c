@@ -3,7 +3,6 @@
 #include "hardware/pwm.h"
 #include "hardware/clocks.h"
 
-
 void setup_leds()
 {
     // Configura os Leds
@@ -13,6 +12,10 @@ void setup_leds()
     gpio_init(LED_VERMELHO);
     gpio_set_dir(LED_VERMELHO, GPIO_OUT);
 
+}
+
+void setup_botao()
+{
     gpio_init(BOTAO_A);
     gpio_set_dir(BOTAO_A, GPIO_IN);
     gpio_pull_up(BOTAO_A);
@@ -51,7 +54,6 @@ int64_t beep(alarm_id_t id, void *user_data)
     pwm_set_gpio_level(BUZZER_PIN, 2048);
 
     return 0;
-
 }
 
 int64_t beep_desativar(alarm_id_t id, void *user_data)
@@ -66,6 +68,9 @@ void setup()
 
     stdio_init_all();
     sleep_ms(1000);
+
+    setup_botao();
+    sleep_ms(100);
 
     setup_leds();
     sleep_ms(100); // estabilizar
