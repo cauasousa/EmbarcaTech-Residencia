@@ -28,37 +28,47 @@ set(PICO_BOARD pico_w CACHE STRING "Board type")
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
 
-project(ati_unid_1_cap_4_temporiz C CXX ASM)
+project(sensor_temp_dma_i2c C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(ati_unid_1_cap_4_temporiz ati_unid_1_cap_4_temporiz.c setup.c)
+add_executable(sensor_temp_dma_i2c sensor_temp_dma_i2c.c inc/ssd1306_i2c.c 
+    helpers/display_oled/display_oled.c
+    helpers/setup/setup.c
+    helpers/temperature_dma_adc/temperature_dma_adc.c )
 
-pico_set_program_name(ati_unid_1_cap_4_temporiz "ati_unid_1_cap_4_temporiz")
-pico_set_program_version(ati_unid_1_cap_4_temporiz "0.1")
+pico_set_program_name(sensor_temp_dma_i2c "sensor_temp_dma_i2c")
+pico_set_program_version(sensor_temp_dma_i2c "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
-pico_enable_stdio_uart(ati_unid_1_cap_4_temporiz 0)
-pico_enable_stdio_usb(ati_unid_1_cap_4_temporiz 1)
+pico_enable_stdio_uart(sensor_temp_dma_i2c 0)
+pico_enable_stdio_usb(sensor_temp_dma_i2c 1)
 
 # Add the standard library to the build
-target_link_libraries(ati_unid_1_cap_4_temporiz 
+target_link_libraries(sensor_temp_dma_i2c
         pico_stdlib
-        hardware_pwm
-        hardware_clocks)
+        hardware_i2c
+        hardware_dma
+        pico_stdlib
+        hardware_adc)
 
 # Add the standard include files to the build
-target_include_directories(ati_unid_1_cap_4_temporiz PRIVATE
+target_include_directories(sensor_temp_dma_i2c PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/helpers
+        ${CMAKE_CURRENT_LIST_DIR}/helpers/display_oled
+        ${CMAKE_CURRENT_LIST_DIR}/helpers/setup
+        ${CMAKE_CURRENT_LIST_DIR}/helpers/temperature_dma_adc
+        ${CMAKE_CURRENT_LIST_DIR}/inc
 )
 
 # Add any user requested libraries
-target_link_libraries(ati_unid_1_cap_4_temporiz 
+target_link_libraries(sensor_temp_dma_i2c 
         
         )
 
-pico_add_extra_outputs(ati_unid_1_cap_4_temporiz)
+pico_add_extra_outputs(sensor_temp_dma_i2c)
 

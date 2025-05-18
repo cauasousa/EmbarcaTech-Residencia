@@ -28,47 +28,37 @@ set(PICO_BOARD pico_w CACHE STRING "Board type")
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
 
-project(unidade_1_capitulo_5 C CXX ASM)
+project(traffic_light_interactive C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(unidade_1_capitulo_5 unidade_1_capitulo_5.c inc/ssd1306_i2c.c 
-    helpers/display_oled/display_oled.c
-    helpers/setup/setup.c
-    helpers/temperature_dma_adc/temperature_dma_adc.c )
+add_executable(traffic_light_interactive traffic_light_interactive.c setup.c)
 
-pico_set_program_name(unidade_1_capitulo_5 "unidade_1_capitulo_5")
-pico_set_program_version(unidade_1_capitulo_5 "0.1")
+pico_set_program_name(traffic_light_interactive "traffic_light_interactive")
+pico_set_program_version(traffic_light_interactive "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
-pico_enable_stdio_uart(unidade_1_capitulo_5 0)
-pico_enable_stdio_usb(unidade_1_capitulo_5 1)
+pico_enable_stdio_uart(traffic_light_interactive 0)
+pico_enable_stdio_usb(traffic_light_interactive 1)
 
 # Add the standard library to the build
-target_link_libraries(unidade_1_capitulo_5
+target_link_libraries(traffic_light_interactive 
         pico_stdlib
-        hardware_i2c
-        hardware_dma
-        pico_stdlib
-        hardware_adc)
+        hardware_pwm
+        hardware_clocks)
 
 # Add the standard include files to the build
-target_include_directories(unidade_1_capitulo_5 PRIVATE
+target_include_directories(traffic_light_interactive PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
-        ${CMAKE_CURRENT_LIST_DIR}/helpers
-        ${CMAKE_CURRENT_LIST_DIR}/helpers/display_oled
-        ${CMAKE_CURRENT_LIST_DIR}/helpers/setup
-        ${CMAKE_CURRENT_LIST_DIR}/helpers/temperature_dma_adc
-        ${CMAKE_CURRENT_LIST_DIR}/inc
 )
 
 # Add any user requested libraries
-target_link_libraries(unidade_1_capitulo_5 
+target_link_libraries(traffic_light_interactive 
         
         )
 
-pico_add_extra_outputs(unidade_1_capitulo_5)
+pico_add_extra_outputs(traffic_light_interactive)
 
