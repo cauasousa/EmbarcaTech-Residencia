@@ -2,6 +2,10 @@
 #include "pico/stdlib.h"  // Funções básicas do SDK Pico
 #include "temperature_dma_adc.h"
 
+uint16_t adc_buffer[NUM_SAMPLES]; // Buffer para armazenar as amostras do ADC
+
+int dma_chan;
+dma_channel_config cfg;
 
 // Converte o valor bruto do ADC (12 bits) para temperatura em graus Celsius
 float convert_to_celsius(uint16_t raw)

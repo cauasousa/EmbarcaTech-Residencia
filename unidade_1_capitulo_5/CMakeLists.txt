@@ -58,6 +58,11 @@ target_link_libraries(unidade_1_capitulo_5
 # Add the standard include files to the build
 target_include_directories(unidade_1_capitulo_5 PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/helpers
+        ${CMAKE_CURRENT_LIST_DIR}/helpers/display_oled
+        ${CMAKE_CURRENT_LIST_DIR}/helpers/setup
+        ${CMAKE_CURRENT_LIST_DIR}/helpers/temperature_dma_adc
+        ${CMAKE_CURRENT_LIST_DIR}/inc
 )
 
 # Add any user requested libraries
