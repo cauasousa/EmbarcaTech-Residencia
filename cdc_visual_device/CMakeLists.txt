@@ -28,38 +28,39 @@ set(PICO_BOARD pico_w CACHE STRING "Board type")
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
 
-project(responsive_CDC_Communication_Device_Class_device_with_visual_identification C CXX ASM)
+project(cdc_visual_device C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(responsive_CDC_Communication_Device_Class_device_with_visual_identification main.c 
+add_executable(cdc_visual_device main.c 
 inc/ssd1306_i2c.c
 helpers/display_oled/display_oled.c
 helpers/setup/setup.c
 helpers/leds/leds.c
 helpers/buzzer/buzzer.c)
 
-pico_set_program_name(responsive_CDC_Communication_Device_Class_device_with_visual_identification "responsive_CDC_Communication_Device_Class_device_with_visual_identification")
-pico_set_program_version(responsive_CDC_Communication_Device_Class_device_with_visual_identification "0.1")
+pico_set_program_name(cdc_visual_device "cdc_visual_device")
+pico_set_program_version(cdc_visual_device "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
-pico_enable_stdio_uart(responsive_CDC_Communication_Device_Class_device_with_visual_identification 0)
-pico_enable_stdio_usb(responsive_CDC_Communication_Device_Class_device_with_visual_identification 1)
+pico_enable_stdio_uart(cdc_visual_device 0)
+pico_enable_stdio_usb(cdc_visual_device 1)
 
 # Add the standard library to the build
-target_link_libraries(responsive_CDC_Communication_Device_Class_device_with_visual_identification
+target_link_libraries(cdc_visual_device
         pico_stdlib
-        # hardware_uart
+        hardware_uart
+        hardware_pwm
         hardware_gpio
         hardware_i2c
-        hardware_pwm
+        hardware_clocks 
 )
 
 # Add the standard include files to the build
-target_include_directories(responsive_CDC_Communication_Device_Class_device_with_visual_identification PRIVATE
+target_include_directories(cdc_visual_device PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
         ${CMAKE_CURRENT_LIST_DIR}/helpers/
         ${CMAKE_CURRENT_LIST_DIR}/helpers/display_oled
@@ -70,9 +71,9 @@ target_include_directories(responsive_CDC_Communication_Device_Class_device_with
 )
 
 # Add any user requested libraries
-target_link_libraries(responsive_CDC_Communication_Device_Class_device_with_visual_identification 
+target_link_libraries(cdc_visual_device 
         
         )
 
-pico_add_extra_outputs(responsive_CDC_Communication_Device_Class_device_with_visual_identification)
+pico_add_extra_outputs(cdc_visual_device)
 

@@ -1,9 +1,8 @@
-#include "setup.h"
+#include "leds.h"
 #include "pico/stdlib.h"
 #include <stdio.h>
-#include "leds.h"
 
-void turn_on_led(bool led_red, bool led_green, bool led_blue) {
+void turn_on_led(int led_red, int led_green, int led_blue) {
     // Ativa ou desativa os LEDs conforme parâmetros
     gpio_put(LED_RED, led_red);
     gpio_put(LED_GREEN, led_green);

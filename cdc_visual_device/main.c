@@ -14,7 +14,7 @@
 #include "helpers/setup/setup.h"
 #include "helpers/leds/leds.h"
 #include "helpers/buzzer/buzzer.h"
-
+#include "helpers/display_oled/display_oled.h"
 
 int main() {
 
@@ -31,6 +31,7 @@ int main() {
     while (true) {
         if (tud_cdc_available()) { // Verifica se há dados disponíveis
             char buf[64]; // Buffer para armazenar os dados recebidos
+            
             uint32_t count = tud_cdc_read(buf, sizeof(buf)); // Lê os dados
             buf[count] = '\0'; // Adiciona terminador de string
 
@@ -44,8 +45,7 @@ int main() {
             } else if (strcmp(buf, "som") == 0) {
                 touch_buzzer();
             }
-
-            write_display({buf});
+            write_display(buf);
             // Ecoa os dados recebidos de volta ao host
             tud_cdc_write(buf, count);
             tud_cdc_write_flush();

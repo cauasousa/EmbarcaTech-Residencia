@@ -1,3 +1,5 @@
+
+
 #ifndef SETUP_LEDS
 #define SETUP_LEDS
 
@@ -7,6 +9,6 @@
 #define LED_BLUE 12
 
 void leds_setup(); // CONFIGURAR OS LEDS
-void turn_on_led(bool led_red, bool led_green, bool led_blue); // Ativa os leds
+void turn_on_led(int led_red, int led_green, int led_blue); // Ativa os leds
 
 #endif

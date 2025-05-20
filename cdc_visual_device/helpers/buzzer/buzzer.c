@@ -2,7 +2,6 @@
 #include "pico/stdlib.h"
 #include "hardware/pwm.h"
 #include "hardware/clocks.h"
-
 #include "buzzer.h"
 
 // Definição de uma função para emitir um beep com duração especificada
@@ -33,9 +32,6 @@ void touch_buzzer()
 
 void buzzer_setup()
 {
-    pwm_init_buzzer(BUZZER_PIN);
-    sleep_ms(200); // Aguarda estabilização
-
     // Configurar o pino como saída de PWM
     gpio_set_function(BUZZER_PIN, GPIO_FUNC_PWM);
 

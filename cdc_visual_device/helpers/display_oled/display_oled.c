@@ -1,9 +1,6 @@
-#include "../../inc/ssd1306.h"
-#include "hardware/i2c.h"
+
 #include "display_oled.h"
 
-#include <stdio.h>
-#include <string.h>
 
 uint8_t ssd[ssd1306_buffer_length];
 
@@ -15,18 +12,18 @@ struct render_area frame_area = {
     end_page : ssd1306_n_pages - 1
 };
 
-void write_display(char *text[])
+void write_display(char *text)
 {
 
     calculate_render_area_buffer_length(&frame_area);
 
     int y = 0;
 
-    for (uint i = 0; i < count_of(text); i++)
-    {
-        ssd1306_draw_string(ssd, 5, y, text[i]);
-        y += 8;
-    }
+    // for (uint i = 0; i < count_of(text); i++)
+    // {
+        ssd1306_draw_string(ssd, 5, y, text);
+    //     y += 8;
+    // }
 
     render_on_display(ssd, &frame_area);
 }

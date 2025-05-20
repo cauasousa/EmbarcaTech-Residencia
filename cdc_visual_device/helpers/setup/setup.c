@@ -1,9 +1,8 @@
-#include "setup.h"
 #include "pico/stdlib.h"
-#include <stdio.h>
 #include "../display_oled/display_oled.h"
 #include "../leds/leds.h"
 #include "../buzzer/buzzer.h"
+#include "setup.h"
 
 void setup()
 {
