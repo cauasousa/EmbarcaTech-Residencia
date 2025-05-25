@@ -23,7 +23,6 @@ void preencher_matriz_com_cores(void) {
     for (uint8_t i = 0; i < total_cores; ++i) {
         npSetAll(cores[i].r, cores[i].g, cores[i].b);
         npWrite();
-        // sleep_ms(700);
     }
 }
 
@@ -33,18 +32,14 @@ void testar_fileiras_colunas(void) {
         npClear();
         acenderFileira(y, COR_MIN, COR_APAGA, COR_APAGA); // vermelho
         npWrite();
-        // sleep_ms(250);
     }
 
-    // sleep_ms(500);
 
     // Colunas da esquerda para a direita em azul suave
     for (uint8_t x = 0; x < NUM_COLUNAS; x++) {
         npClear();
         acenderColuna(x, COR_APAGA, COR_APAGA, COR_MIN); // azul
         npWrite();
-        // sleep_ms(250);
     }
 
-    // sleep_ms(500);
 }

@@ -96,7 +96,9 @@ float tarefa1_obter_media_temp(dma_channel_config *cfg_temp, int dma_chan)
     // while (absolute_time_diff_us(inicio, get_absolute_time()) < DURACAO_AMOSTRAGEM_US){
     dma_temp_done = false;
     iniciar_dma_temp(buffer_temp, cfg_temp, dma_chan);
+    
     dma_channel_wait_for_finish_blocking(dma_chan);
+
     adc_run(false); // Desliga o ADC
 
     for (int i = 0; i < BLOCO_AMOSTRAS; i++)

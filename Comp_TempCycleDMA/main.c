@@ -46,40 +46,12 @@ int main()
 {
         setup(); // Inicializações: ADC, DMA, interrupções, OLED, etc.
 
-        // while (!stdio_usb_connected()) {
-        //     sleep_ms(100);
-        // }
-
-        // Ativa o watchdog com timeout de 2 segundos
-        // watchdog_enable(2000, 1);
         struct repeating_timer timer;
-        add_repeating_timer_ms(1000, tarefa_1, NULL, &timer);
+        add_repeating_timer_ms(1000, tarefa_1, NULL, &timer); //executar tarefa a cada 1s
+
         while (true)
         {
-                // watchdog_update();  // Alimente o watchdog no início de cada ciclo
-
-                // tarefa_1();
-                // tarefa_5();
-                // tarefa_2();
-                // tarefa_3();
-                // tarefa_4();
-                printf("\nFuncionando");
-                // // --- Cálculo dos tempos de execução ---
-                // int64_t tempo1_us = absolute_time_diff_us(ini_tarefa1, fim_tarefa1);
-                // int64_t tempo2_us = absolute_time_diff_us(ini_tarefa2, fim_tarefa2);
-                // int64_t tempo3_us = absolute_time_diff_us(ini_tarefa3, fim_tarefa3);
-                // int64_t tempo4_us = absolute_time_diff_us(ini_tarefa4, fim_tarefa4);
-
-                // // --- Exibição no terminal ---
-                // printf("Temperatura: %.2f °C | T1: %.3fs | T2: %.3fs | T3: %.3fs | T4: %.3fs | Tendência: %s\n",
-                //        media,
-                //        tempo1_us / 1e6,
-                //        tempo2_us / 1e6,
-                //        tempo3_us / 1e6,
-                //        tempo4_us / 1e6,
-                //        tendencia_para_texto(t));
-
-                // sleep_ms(1000); // Aguarda próximo ciclo
+                printf("\nTarefas Executando!");
         }
 
         return 0;
@@ -92,7 +64,8 @@ bool tarefa_1(struct repeating_timer *t)
         ini_tarefa1 = get_absolute_time();
         media = tarefa1_obter_media_temp(&cfg_temp, DMA_TEMP_CHANNEL);
         fim_tarefa1 = get_absolute_time();
-        add_alarm_in_ms(1000, tarefa_2, NULL, false);
+
+        add_alarm_in_ms(1000, tarefa_2, NULL, false); // executar tarefa 2 depois de 1s
         return true;
 }
 /*******************************/
@@ -102,7 +75,8 @@ int64_t tarefa_2(alarm_id_t id, void *user_data)
         ini_tarefa3 = get_absolute_time();
         t = tarefa3_analisa_tendencia(media);
         fim_tarefa3 = get_absolute_time();
-        add_alarm_in_ms(1000, tarefa_3, NULL, false);
+
+        add_alarm_in_ms(1000, tarefa_3, NULL, false); // Executar tarefa 3 depois de 1s
         return false;
 }
 /*******************************/
@@ -112,7 +86,8 @@ int64_t tarefa_3(alarm_id_t id, void *user_data)
         ini_tarefa2 = get_absolute_time();
         tarefa2_exibir_oled(media, t);
         fim_tarefa2 = get_absolute_time();
-        add_alarm_in_ms(1000, tarefa_4, NULL, false);
+
+        add_alarm_in_ms(1000, tarefa_4, NULL, false); // executar tarefa 4 depois de 1s
         return false;
 }
 /*******************************/
@@ -122,7 +97,8 @@ int64_t tarefa_4(alarm_id_t id, void *user_data)
         absolute_time_t ini_tarefa4 = get_absolute_time();
         tarefa4_matriz_cor_por_tendencia(t);
         absolute_time_t fim_tarefa4 = get_absolute_time();
-        add_alarm_in_ms(1000, tarefa_5, NULL, false);
+
+        add_alarm_in_ms(1000, tarefa_5, NULL, false); // executar tarefa 5 depois de 1s
         return false;
 }
 
@@ -138,5 +114,6 @@ int64_t tarefa_5(alarm_id_t id, void *user_data)
                 npWrite();
                 sleep_ms(1000);
         }
+        
         return false;
 }
