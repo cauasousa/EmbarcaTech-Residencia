@@ -1,7 +1,6 @@
 
 #include "display_oled.h"
 
-
 uint8_t ssd[ssd1306_buffer_length];
 
 // Preparar área de renderização para o display (ssd1306_width pixels por ssd1306_n_pages páginas)
@@ -17,13 +16,13 @@ void write_display(char *text)
 
     calculate_render_area_buffer_length(&frame_area);
 
+    // zera o display inteiro
+    memset(ssd, 0, ssd1306_buffer_length);
+    render_on_display(ssd, &frame_area);
+    
     int y = 0;
 
-    // for (uint i = 0; i < count_of(text); i++)
-    // {
-        ssd1306_draw_string(ssd, 5, y, text);
-    //     y += 8;
-    // }
+    ssd1306_draw_string(ssd, 5, y, text);
 
     render_on_display(ssd, &frame_area);
 }

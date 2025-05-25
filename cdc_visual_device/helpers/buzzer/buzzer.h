@@ -5,7 +5,7 @@
 #define SETUP_BUZZER
 
 // Configuração do pino do buzzer
-#define BUZZER_PIN 10
+#define BUZZER_PIN 21
 
 // Configuração da frequência do buzzer (em Hz)
 #define BUZZER_FREQUENCY 100

@@ -1,5 +1,3 @@
-
-
 #ifndef SETUP_LEDS
 #define SETUP_LEDS
 
