@@ -13,8 +13,6 @@
  *
  *      O sistema utiliza watchdog para segurança, terminal USB
  *      para monitoramento e display OLED para visualização direta.
- *
- *
  *  Data: 12/05/2025
  * ------------------------------------------------------------
  */
@@ -114,6 +112,6 @@ int64_t tarefa_5(alarm_id_t id, void *user_data)
                 npWrite();
                 sleep_ms(1000);
         }
-        
+
         return false;
 }
