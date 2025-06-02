@@ -10,7 +10,6 @@
 #include "pico/time.h" // Garante acesso a time_us_32()
 #include "hardware/gpio.h" // Controle de GPIO
 
-C:\Users\CauaS\Downloads\Codigos - PIO\NeoControlLab\NeoControlLab.c
 
 #define BOTAO_A 5 // Pino do botão
 volatile int vezes = 0; // Quantidade de sorteios
