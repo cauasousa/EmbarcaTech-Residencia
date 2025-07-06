@@ -1,29 +1,45 @@
 #include "tasks_logic.h" // Importa definições relacionadas
 
 void monitoring_task(void *parameter)
-{
+{   
+
     while (1)
     {
-        // printf("Task1: RED\n");
-        // turn_on_leds(1, 0, 0); // Liga apenas o vermelho
-        vTaskDelay(pdMS_TO_TICKS(13000)); // Espera 13 segundos
+
+        float x = read_joystick_x();
+        float y = read_joystick_y();
+
+        printf("=-=-=-=-=-=-=-=-=-=-=-\n");
+        printf("Joystick x(ADC0): %f\n", x);
+        printf("Joystick y(ADC1): %f\n", y);
+        printf("microfone (ADC2): %d\n", read_adc_micro());
+
+        if(x > 3.00f || y > 3.00f){
+            active_beep();
+        }else{
+            desactive_beep();
+        }
+        vTaskDelay(pdMS_TO_TICKS(50)); // Espera
     }
 }
 
 void alive_task(void *parameter)
 {
+
     while (1)
     {
-        // vTaskDelay(pdMS_TO_TICKS(5000)); // Espera 5 segundos
-        // printf("Task2: VERDE\n");
-        // turn_on_leds(0, 1, 0); // Liga apenas o verde
-        vTaskDelay(pdMS_TO_TICKS(8000)); // Espera 8 segundos
+        turn_on_led(1, 0, 0); // Liga vermelho
+        printf("Aceso led VERMELHO\n");
+        vTaskDelay(pdMS_TO_TICKS(500)); // Espera
+        turn_on_led(0, 0, 0);           // desliga vermelho
+        printf("Desligado led VERMELHO\n");
+        vTaskDelay(pdMS_TO_TICKS(500)); // Espera
     }
 }
 
 void self_test(void *parameter)
 {
-
+    
     turn_on_led(1, 0, 0); // Liga vermelho
     printf("Aceso led VERMELHO\n");
     vTaskDelay(pdMS_TO_TICKS(500)); // Espera

@@ -18,9 +18,11 @@ void setup_init_sys()
     buzzer_setup();
     sleep_ms(100); // Espera um pouco pra garantir que tudo inicializou
 
+    // Inicializa o joystick
     joystick_setup();
     sleep_ms(100); // Espera um pouco pra garantir que tudo inicializou
     
+    // Inicializa o microfone
     micro_setup();
     sleep_ms(100); // Espera um pouco pra garantir que tudo inicializou
     

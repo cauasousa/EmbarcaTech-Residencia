@@ -14,5 +14,7 @@
 
 void buzzer_setup();
 void touch_buzzer();
+void active_beep();
+void desactive_beep();
 
 #endif
