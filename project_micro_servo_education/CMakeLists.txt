@@ -35,7 +35,10 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(project_micro_servo_education project_micro_servo_education.c )
+add_executable(project_micro_servo_education project_micro_servo_education.c 
+        dhcpserver/dhcpserver.c
+        dnsserver/dnsserver.c)
+
 
 pico_set_program_name(project_micro_servo_education "project_micro_servo_education")
 pico_set_program_version(project_micro_servo_education "0.1")
@@ -47,17 +50,27 @@ pico_enable_stdio_usb(project_micro_servo_education 1)
 # Add the standard library to the build
 target_link_libraries(project_micro_servo_education
         pico_stdlib
-        hardware_pwm)
+        hardware_pwm
+        pico_multicore)
 
 # Add the standard include files to the build
 target_include_directories(project_micro_servo_education PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/.. # for our common lwipopts
+        ${CMAKE_CURRENT_LIST_DIR}/dhcpserver
+        ${CMAKE_CURRENT_LIST_DIR}/dnsserver
 )
 
 # Add any user requested libraries
 target_link_libraries(project_micro_servo_education 
-        
+        pico_cyw43_arch_lwip_threadsafe_background
+        pico_stdlib
         )
+
+# You can change the address below to change the address of the access point
+pico_configure_ip4_address(project_micro_servo_education PRIVATE
+        CYW43_DEFAULT_IP_AP_ADDRESS 192.168.4.1
+    )
 
 pico_add_extra_outputs(project_micro_servo_education)
 
