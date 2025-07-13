@@ -1,20 +1,3 @@
-/**
- * Projeto: Servidor HTTP com controle de LED via Access Point - Raspberry Pi Pico W
- *
- * Objetivos:
- * - Configurar o Raspberry Pi Pico W como um ponto de acesso (Access Point) Wi-Fi.
- * - Iniciar servidores DHCP e DNS locais para permitir a conexão de dispositivos clientes.
- * - Criar um servidor HTTP embarcado que disponibiliza uma página HTML de controle.
- * - Permitir o controle remoto de um LED conectado ao GPIO 0 através de comandos HTTP.
- *
- * Funcionalidades:
- * - Criação de uma rede Wi-Fi com nome (SSID) e senha definidos no código.
- * - Atribuição automática de IP aos dispositivos conectados via servidor DHCP.
- * - Interface HTML que permite visualizar e alterar o estado do LED (ligado/desligado).
- * - Manipulação direta de pinos GPIO por meio de requisições do navegador.
- * - Finalização controlada do modo Access Point via tecla 'd'.
- */
-
 #include <string.h>
 #include "pico/multicore.h"
 #include "hardware/pwm.h"
@@ -38,7 +21,9 @@
 // #define HTTP_RESPONSE_REDIRECT " "
 #define HTTP_RESPONSE_REDIRECT "HTTP/1.1 302 Redirect\nLocation: http://%s\n\n"
 
-#define ACAO_MOVE_SERVO 1
+#define ACAO_MOVE_SERVO_X 0
+#define ACAO_MOVE_SERVO_Y 1
+#define ACAO_MOVE_SERVO_Z 2
 int x = 90, y = 90, z = 90;
 
 // --- Configuração do Pino de Controle do Servo ---
@@ -134,70 +119,157 @@ static int test_server_content(const char *request, const char *params, char *re
 
         if (params)
         {
-            sscanf(params, "x=%d&y=%d&z=%d", &value_x, &value_y, &value_z);
-            printf("Valores recebidos - x: %d, y: %d, z: %d\n", value_x, value_y, value_z);
+            char *p;
+            int changed = -1;
+            int step_value = 0; // Variável para armazenar o valor do passo (+1, -1, +10, -10)
 
-            // se caso não houver valores alterados
-            if (value_x >= 0 && value_x <= 180)
+            // Verifica os parâmetros para cada eixo e define o valor do passo
+            if ((p = strstr(params, "x_plus1=")) != NULL)
             {
-                x = value_x;
+                step_value = 1;
+                changed = 0;
             }
-            if (value_y >= 0 && value_y <= 180)
+            else if ((p = strstr(params, "x_minus1=")) != NULL)
             {
-                y = value_y;
+                step_value = -1;
+                changed = 0;
             }
-            if (value_z >= 0 && value_z <= 180)
+            else if ((p = strstr(params, "x_plus10=")) != NULL)
             {
-                z = value_z;
+                step_value = 20;
+                changed = 0;
             }
-            if (value_x == -1 && value_y == -1 && value_z == -1)
+            else if ((p = strstr(params, "x_minus10=")) != NULL)
             {
-                printf("Informe valores válidos\n");
-                mensagem = "<p> Valores inválidos. Use de 0 a 180.</p>";
+                step_value = -20;
+                changed = 0;
+            }
+            else if ((p = strstr(params, "y_plus1=")) != NULL)
+            {
+                step_value = 1;
+                changed = 1;
+            }
+            else if ((p = strstr(params, "y_minus1=")) != NULL)
+            {
+                step_value = -1;
+                changed = 1;
+            }
+            else if ((p = strstr(params, "y_plus10=")) != NULL)
+            {
+                step_value = 20;
+                changed = 1;
+            }
+            else if ((p = strstr(params, "y_minus10=")) != NULL)
+            {
+                step_value = -20;
+                changed = 1;
+            }
+            else if ((p = strstr(params, "z_plus1=")) != NULL)
+            {
+                step_value = 1;
+                changed = 2;
+            }
+            else if ((p = strstr(params, "z_minus1=")) != NULL)
+            {
+                step_value = -1;
+                changed = 2;
+            }
+            else if ((p = strstr(params, "z_plus10=")) != NULL)
+            {
+                step_value = 20;
+                changed = 2;
+            }
+            else if ((p = strstr(params, "z_minus10=")) != NULL)
+            {
+                step_value = -20;
+                changed = 2;
             }
 
-            printf("Valores válidos, enviando ação ao core1\n");
-            mensagem = "<p> Valores válidos recebidos!</p>";
-            multicore_fifo_push_blocking(ACAO_MOVE_SERVO);
+            if (changed == 0)
+            {
+                x += step_value;
+                if (x < 0)
+                    x = 0;
+                if (x > 180)
+                    x = 180;
+                multicore_fifo_push_blocking(ACAO_MOVE_SERVO_X);
+            }
+            else if (changed == 1)
+            {
+                y += step_value;
+                if (y < 0)
+                    y = 0;
+                if (y > 180)
+                    y = 180;
+                multicore_fifo_push_blocking(ACAO_MOVE_SERVO_Y);
+            }
+            else if (changed == 2)
+            {
+                z += step_value;
+                if (z < 0)
+                    z = 0;
+                if (z > 180)
+                    z = 180;
+                multicore_fifo_push_blocking(ACAO_MOVE_SERVO_Z);
+            }
         }
+    }
 
-        // Retorna a página com mensagem incluída
-         len = snprintf(result, max_result_len,
-            "<!DOCTYPE html><html lang=\"pt-BR\">"
-            "<head><meta charset=\"UTF-8\">"
-            "<title>Controle de Servo</title>"
-            "<style>"
-            "body { background-color: #f0f8ff; font-family: Arial, sans-serif; }"
-            ".container { max-width: 400px; margin: 50px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }"
-            "input[type='number'] { width: 100%%; padding: 8px; margin: 8px 0; box-sizing: border-box; }"
-            "input[type='submit'] { background-color: #007BFF; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }"
-            "input[type='submit']:hover { background-color: #0056b3; }"
-            "h2 { text-align: center; }"
-            "</style></head><body>"
-            "<div class=\"container\">"
-            "<h2>Controle do Servo</h2>"
-            "<form action=\"/input\" method=\"get\">"
-            "X: <input name=\"x\" type=\"number\" value=\"-1\" min=\"-1\" max=\"180\"><br>"
-            "Y: <input name=\"y\" type=\"number\" value=\"-1\" min=\"-1\" max=\"180\"><br>"
-            "Z: <input name=\"z\" type=\"number\" value=\"-1\" min=\"-1\" max=\"180\"><br>"
-            "<input type=\"submit\" value=\"Enviar\">"
-            "</form>"
-            "%s"
-            "</div></body></html>",
-            mensagem);
-    }
-    else if (strncmp(request, "/", 1) == 0)
-    {
-        // página inicial
-        len = snprintf(result, max_result_len,
-            "<!DOCTYPE html><html><head><meta charset=\"UTF-8\">"
-            "<title>Controle</title>"
-            "<style>body { background-color: #e0f7fa; font-family: sans-serif; text-align: center; padding-top: 50px; }</style>"
-            "</head><body>"
-            "<h1>Controle do Servo</h1>"
-            "<p><a href=\"/input\">Ir para o formulário de controle</a></p>"
-            "</body></html>");
-    }
+    // Retorna a página com mensagem incluída e os novos botões
+    len = snprintf(result, max_result_len,
+                   "<!DOCTYPE html><html lang=\"pt-BR\">"
+                   "<head><meta charset=\"UTF-8\"><title>Controle Servo</title>"
+                   "<style>"
+                   "body { background-color: #f0f8ff; font-family: Arial, sans-serif; text-align: center; padding: 40px; }"
+                   ".servo-box { margin-bottom: 30px; }"
+                   ".angle { font-size: 24px; margin: 10px; }"
+                   ".btn { font-size: 20px; width: 50px; height: 50px; margin: 5px; border-radius: 50%%; border: none; color: white; cursor: pointer; }"
+                   ".btn:hover { opacity: 0.8; }"
+                   ".x { background-color: #f44336; }"
+                   ".y { background-color: #4CAF50; }"
+                   ".z { background-color: #2196F3; }"
+                   ".btn-small { font-size: 16px; width: 40px; height: 40px; margin: 3px; }" // Novo estilo para botões pequenos
+                   "</style></head><body>"
+                   "<h1>Controle de Servos</h1>"
+
+                   "<div class='servo-box'>"
+                   "<h2>Eixo X: %d°</h2>"
+                   "<a href='/input?x_minus10=1'><button class='btn x'>-20</button></a>"
+                   "<a href='/input?x_minus1=1'><button class='btn x btn-small'>-1</button></a>"
+                   "<a href='/input?x_plus1=1'><button class='btn x btn-small'>+1</button></a>"
+                   "<a href='/input?x_plus10=1'><button class='btn x'>+20</button></a>"
+                   "</div>"
+
+                   "<div class='servo-box'>"
+                   "<h2>Eixo Y: %d°</h2>"
+                   "<a href='/input?y_minus10=1'><button class='btn y'>-20</button></a>"
+                   "<a href='/input?y_minus1=1'><button class='btn y btn-small'>-1</button></a>"
+                   "<a href='/input?y_plus1=1'><button class='btn y btn-small'>+1</button></a>"
+                   "<a href='/input?y_plus10=1'><button class='btn y'>+20</button></a>"
+                   "</div>"
+
+                   "<div class='servo-box'>"
+                   "<h2>Eixo Z: %d°</h2>"
+                   "<a href='/input?z_minus10=1'><button class='btn z'>-20</button></a>"
+                   "<a href='/input?z_minus1=1'><button class='btn z btn-small'>-1</button></a>"
+                   "<a href='/input?z_plus1=1'><button class='btn z btn-small'>+1</button></a>"
+                   "<a href='/input?z_plus10=1'><button class='btn z'>+20</button></a>"
+                   "</div>"
+
+                   "</body></html>",
+                   x, y, z);
+    // else if (strncmp(request, "/", 1) == 0)
+    // {
+    //     // página inicial
+    //     len = snprintf(result, max_result_len,
+    //                    "<!DOCTYPE html><html><head><meta charset=\"UTF-8\">"
+    //                    "<title>Controle</title>"
+    //                    "<style>body { background-color: #e0f7fa; font-family: sans-serif; text-align: center; padding-top: 50px; }</style>"
+    //                    "</head><body>"
+    //                    "<h1>Controle do Servo</h1>"
+    //                    "<p><a href=\"/input\">Ir para o formulário de controle</a></p>"
+    //                    "</body></html>");
+    // }
 
     return len;
 }
@@ -446,23 +518,23 @@ void servo_angle(int servo_num, int angle)
 {
     printf("Caso 1");
     if (angle > 180 || angle < 0)
-    return;
-    
+        return;
+
     printf("Caso 2");
     int current_angle = servo_last_value[servo_num];
-    
-   
+
     printf("Caso 3");
     // Define direção do movimento
-    int step = (angle > current_angle) ? 5 : -5;
-    
-    printf("Caso 4 -%d - %d - %d", step, current_angle, angle);
+    int step = (angle > current_angle) ? 1 : -1;
+
+    // printf("Caso 4 -%d - %d - %d", step, current_angle, angle);
     for (int a = current_angle; a != angle; a += step)
     {
         printf("Movendo para o angulo: %d\n", a);
         pwm_set_gpio_level(servo_pins[servo_num], angle_to_duty(a));
         sleep_ms(50);
     }
+
     // Garante o valor final exato
     pwm_set_gpio_level(servo_pins[servo_num], angle_to_duty(angle));
 
@@ -475,15 +547,15 @@ void servos_controllers(int servo_angle_1, int servo_angle_2, int servo_angle_3)
     printf("\nMove servo no eixo X ...\n");
 
     servo_angle(0, servo_angle_1);
-    sleep_ms(500);
+    sleep_ms(50);
     printf("\nMove servo no eixo y ...\n");
 
     servo_angle(1, servo_angle_2);
-    sleep_ms(500);
+    sleep_ms(50);
     printf("\nMove servo no eixo z ...\n");
 
     servo_angle(2, servo_angle_3);
-    sleep_ms(500);
+    sleep_ms(50);
 }
 
 void tratar_eventos_web()
@@ -492,14 +564,20 @@ void tratar_eventos_web()
     while (true)
     {
         uint32_t acao = multicore_fifo_pop_blocking(); // Espera ação
-        if (acao == ACAO_MOVE_SERVO)
+        if (acao == ACAO_MOVE_SERVO_X)
         {
-            ///
-            sleep_ms(500);
-            printf("\nMove servo ...\n");
-            servos_controllers(x, y, z);
-            // sleep_ms(1000); // Pausa no final do curso.
-            // servos_controllers(90, 90, 90);
+            servo_angle(0, x);
+            sleep_ms(50);
+        }
+        else if (acao == ACAO_MOVE_SERVO_Y)
+        {
+            servo_angle(1, y);
+            sleep_ms(50);
+        }
+        else if (acao == ACAO_MOVE_SERVO_Z)
+        {
+            servo_angle(2, z);
+            sleep_ms(50);
         }
     }
 }
@@ -508,7 +586,7 @@ int main()
     stdio_init_all();
     // while (!stdio_usb_connected())
     // {
-    //     sleep_ms(100);
+    //      sleep_ms(100);
     // }
     sleep_ms(100);
     printf("--- Configurando Micros Servos na gpio 0, 2 e 28, usando pwm---\n");
