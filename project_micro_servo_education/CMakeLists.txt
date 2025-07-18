@@ -37,7 +37,10 @@ pico_sdk_init()
 
 add_executable(project_micro_servo_education project_micro_servo_education.c 
         dhcpserver/dhcpserver.c
-        dnsserver/dnsserver.c)
+        dnsserver/dnsserver.c
+        src/web_server/web_server.c
+        src/wifi_manager/wifi_manager.c
+        src/servo_control/servo_control.c)
 
 
 pico_set_program_name(project_micro_servo_education "project_micro_servo_education")
@@ -50,8 +53,11 @@ pico_enable_stdio_usb(project_micro_servo_education 1)
 # Add the standard library to the build
 target_link_libraries(project_micro_servo_education
         pico_stdlib
+        pico_cyw43_arch_lwip_threadsafe_background
+        pico_stdlib
         hardware_pwm
-        pico_multicore)
+        pico_multicore
+        )
 
 # Add the standard include files to the build
 target_include_directories(project_micro_servo_education PRIVATE
@@ -59,12 +65,15 @@ target_include_directories(project_micro_servo_education PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/.. # for our common lwipopts
         ${CMAKE_CURRENT_LIST_DIR}/dhcpserver
         ${CMAKE_CURRENT_LIST_DIR}/dnsserver
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/web_server
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/wifi_manager
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/servo_control
+        ${CMAKE_CURRENT_SOURCE_DIR}/src 
 )
 
 # Add any user requested libraries
 target_link_libraries(project_micro_servo_education 
-        pico_cyw43_arch_lwip_threadsafe_background
-        pico_stdlib
+        
         )
 
 # You can change the address below to change the address of the access point
